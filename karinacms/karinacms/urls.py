@@ -9,7 +9,7 @@ router = routers.DefaultRouter()
 router.register(r'leads', views.LeadViewSet)
 
 urlpatterns = patterns('',
-	url(r'^leads/', include('lead_center.urls')),
+	url(r'^devs/', include('lead_center.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include(router.urls)),
     # url(r'^api/', include('rest_framework.urls', namespace='rest_framework')),
