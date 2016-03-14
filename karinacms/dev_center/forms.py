@@ -47,7 +47,8 @@ class DevForm(BootstrapForm):
 	class Meta:
 		model = Dev
 		fields = ('first_name', 'last_name', 'city', 'phone',
-				 'email', 'comment', 'status', 'campaign', 'product')
+				 'email', 'comment', 'status', 'campaign', 'product',
+				  'asana', 'github', 'slack')
 
 
 class DevCommentForm(BootstrapForm):
