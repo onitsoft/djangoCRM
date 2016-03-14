@@ -15,11 +15,11 @@ SETTINGS_DIR = os.path.dirname(__file__)
 PROJECT_PATH = os.path.join(SETTINGS_DIR, os.pardir)
 PROJECT_PATH = os.path.abspath(PROJECT_PATH)
 TEMPLATE_PATH = os.path.join(PROJECT_PATH, 'templates')
-TEMPLATE_PATH_LEADS = os.path.join(TEMPLATE_PATH, 'lead_center')
+TEMPLATE_PATH_LEADS = os.path.join(TEMPLATE_PATH, 'dev_center')
 TEMPLATE_PATH_LEADS_COMMON = os.path.join(TEMPLATE_PATH_LEADS, 'common')
 STATIC_PATH = os.path.join(PROJECT_PATH, 'static')
 STATIC_URL = '/static/'
-LOGIN_URL = '/leads/login/'
+LOGIN_URL = '/devs/login/'
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
@@ -44,7 +44,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'south',
-    'lead_center',
+    'dev_center',
     'rest_framework',
 )
 

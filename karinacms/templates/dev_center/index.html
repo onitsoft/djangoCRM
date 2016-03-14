@@ -1,7 +1,7 @@
-{% extends "lead_center/common/base.html" %}
+{% extends "dev_center/common/base.html" %}
 {% block content %}
         <h1>Devs database</h1>
-        {% if leads %}
+        {% if devs %}
             <div class="tbl">
                 <div style="font-weight:bold;" class="row">
                 	<div class="col col-lg-3">
@@ -20,24 +20,24 @@
                         Location
                     </div>
                 </div>
-                {% for lead in leads %}
+                {% for dev in devs %}
                     <div style="font-weight:bold;" class="row">
                         <div class="col col-lg-3">
-                            <a href='lead_page/{{lead.first_name}}-{{lead.last_name}}'>
-                                {{lead.first_name}}
+                            <a href='dev_page/{{dev.first_name}}-{{dev.last_name}}'>
+                                {{dev.first_name}}
                             </a>
                         </div>
 
                         <div class="col col-lg-3">
-                            {{lead.last_name}}
+                            {{dev.last_name}}
                         </div>
 
                         <div class="col col-lg-3">
-                            {{lead.phone}}
+                            {{dev.phone}}
                         </div>
 
                         <div class="col col-lg-3">
-                            {{lead.city}}
+                            {{dev.city}}
                         </div>
                     </div>
                 {% endfor %}

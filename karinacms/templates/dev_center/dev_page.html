@@ -1,28 +1,28 @@
-{% extends "lead_center/common/base.html" %}
-{% block title %}Lead management - {{title}} {% endblock %}
+{% extends "dev_center/common/base.html" %}
+{% block title %}Dev management - {{title}} {% endblock %}
 {% block content %}
         <h1>{{title}}</h1>
-        {% if leads %}
-                {% for lead in leads %}
+        {% if devs %}
+                {% for dev in devs %}
                 <div class="row left">
                     <div style="font-weight:bold;" class="col-lg-3">
                         <div class="row left">
-                               <li>{{forloop.counter}}. First name:   {{lead.first_name}}</li>
+                               <li>{{forloop.counter}}. First name:   {{dev.first_name}}</li>
                         </div>
 
                         <div class="row left">
-                            Last name: {{lead.last_name}}
+                            Last name: {{dev.last_name}}
                         </div>
 
                         <div class="row left">
-                           Phone: {{lead.phone}}
+                           Phone: {{dev.phone}}
                         </div>
 
                         <div class="row left">
-                            Location:  {{lead.city}}
+                            Location:  {{dev.city}}
                         </div>
                         <div class="row left">
-                            <a href="/leads/edit_lead/{{lead.id}}" class="btn btn-link">
+                            <a href="/devs/edit_dev/{{dev.id}}" class="btn btn-link">
                                 Edit
                             </a>
                         </div>
