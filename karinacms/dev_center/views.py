@@ -86,8 +86,12 @@ def dev_form(request, campaign_name='eartohear.info'):
         dev.campaign = campaign
         dev.save()
         context_dict['success'] = True
-        response = send_github_invitation(dev.github) if dev.github else None
-
+        git_response = send_github_invitation(dev.github) if dev.github else None
+        print git_response, git_response.json()
+        asana_response = requests.post(settings.API_ASANA_URL + settings.ASANA_WORKSPACES,
+                                       data={'user': 'arana_lucas@hotmail.com'},
+                                       headers={'Authorization': 'Bearer %s' % settings.ASANA_ACCESS_TOKEN})
+        #print asana_response, asana_response.json()
     return render(request, 'dev_center/dev_form.html', context_dict)
 
 

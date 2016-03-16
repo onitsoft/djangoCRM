@@ -121,6 +121,9 @@ GIT_ADD_MEMBERSHIP = 'teams/1933218/memberships/'
 GIT_USER = ''
 GIT_ACCESS_TOKEN = ''
 
+# Asana Credentials
+API_ASANA_URL = 'https://app.asana.com/api/1.0/'
+ASANA_WORKSPACES = 'workspaces/41767545824401/addUser'
 
 try:
     from local_settings import *
