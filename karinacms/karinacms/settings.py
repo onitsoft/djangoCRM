@@ -113,3 +113,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# Github Credentials
+API_GITHUB_URL = 'https://api.github.com/'
+GIT_ADD_MEMBERSHIP = 'teams/1933218/memberships/'
+GIT_USER = ''
+GIT_ACCESS_TOKEN = ''
+
+
+try:
+    from local_settings import *
+except ImportError:
+    pass
