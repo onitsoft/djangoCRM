@@ -117,13 +117,15 @@ STATIC_URL = '/static/'
 
 # Github Credentials
 API_GITHUB_URL = 'https://api.github.com/'
-GIT_ADD_MEMBERSHIP = 'teams/1933218/memberships/'
+GIT_MEMBERSHIP = 'orgs/onitsoft/memberships/'
 GIT_USER = ''
 GIT_ACCESS_TOKEN = ''
 
 # Asana Credentials
 API_ASANA_URL = 'https://app.asana.com/api/1.0/'
-ASANA_WORKSPACES = 'workspaces/41767545824401/addUser'
+ASANA_WORKSPACES = 'workspaces/'
+ASANA_ADD_USER = '/addUser/'
+ASANA_DELETE_USER = '/removeUser/'
 
 try:
     from local_settings import *

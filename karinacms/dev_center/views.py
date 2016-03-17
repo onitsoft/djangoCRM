@@ -13,6 +13,7 @@ from .custom_permissions import PostOnly
 
 from karinacms import settings
 import requests
+import json
 
 # import sys
 # sys.path.insert(0, '/path/to/application/app/folder')
@@ -63,10 +64,71 @@ def user_login(request):
     return render(request, 'dev_center/login.html', context)
 
 
+def set_admin_permissions(devData, github, asana):
+        workspaces = get_asana_workspaces()
+        send_github_invitation(devData.github) if devData.github != github or devData.status.name != 'inactive' else None
+        send_asana_invitation(devData.asana, workspaces) if devData.asana != asana or devData.status.name != 'inactive' else None
+        revoke_github_permissions(devData.github) if devData.status.name == 'inactive' else None
+        revoke_asana_permissions(devData.asana, workspaces) if devData.status.name == 'inactive' else None
+
+
 def send_github_invitation(user):
-    r = requests.put(settings.API_GITHUB_URL + settings.GIT_ADD_MEMBERSHIP + user,
+    # Sends a github invitation to the Team to the selected User.
+    # User MUST be a username. Can't be an email.
+
+    r = requests.put(settings.API_GITHUB_URL + settings.GIT_MEMBERSHIP + user,
                      auth=(settings.GIT_USER, settings.GIT_ACCESS_TOKEN))
     return r
+
+
+def revoke_github_permissions(user):
+    # If the user is set to inactive, permissions to the user are denied
+
+    r = requests.delete(settings.API_GITHUB_URL + settings.GIT_MEMBERSHIP + user,
+                        auth=(settings.GIT_USER, settings.GIT_ACCESS_TOKEN))
+
+    return r
+
+
+def get_asana_workspaces():
+    # Gets all projects available
+    # Todo: Selectable project invitation.
+
+    work_r = requests.get(settings.API_ASANA_URL + settings.ASANA_WORKSPACES,
+                          headers={'Authorization': 'Bearer %s' % settings.ASANA_ACCESS_TOKEN})
+
+    work = json.loads(work_r.text)
+    workspaces = [str(i['id']) for i in work['data']]
+
+    return workspaces
+
+
+def send_asana_invitation(user, workspaces):
+    # Sends an invitation to each of the available workspaces.
+
+    responses = []
+    for i in workspaces:
+        r = requests.post(settings.API_ASANA_URL + settings.ASANA_WORKSPACES + i + settings.ASANA_ADD_USER,
+                          data={'user': user},
+                          headers={'Authorization': 'Bearer %s' % settings.ASANA_ACCESS_TOKEN})
+        responses.append(r)
+
+    return responses
+
+
+def revoke_asana_permissions(user, workspaces):
+    # If the user is set to inactive, permissions to the user are denied
+
+    responses = []
+    for i in workspaces:
+        r = requests.post(settings.API_ASANA_URL + settings.ASANA_WORKSPACES + i + settings.ASANA_DELETE_USER,
+                          data={'user': user},
+                          headers={'Authorization': 'Bearer %s' % settings.ASANA_ACCESS_TOKEN})
+        responses.append(r)
+
+    return responses
+
+
 
 @login_required
 def dev_form(request, campaign_name='eartohear.info'):
@@ -87,11 +149,9 @@ def dev_form(request, campaign_name='eartohear.info'):
         dev.save()
         context_dict['success'] = True
         git_response = send_github_invitation(dev.github) if dev.github else None
-        print git_response, git_response.json()
-        asana_response = requests.post(settings.API_ASANA_URL + settings.ASANA_WORKSPACES,
-                                       data={'user': 'arana_lucas@hotmail.com'},
-                                       headers={'Authorization': 'Bearer %s' % settings.ASANA_ACCESS_TOKEN})
-        #print asana_response, asana_response.json()
+        asana_responses = send_asana_invitation(dev.asana) if dev.asana else None
+        # Todo: Show if exceptions appear/success
+
     return render(request, 'dev_center/dev_form.html', context_dict)
 
 
@@ -104,11 +164,12 @@ def dev_edit_form(request, dev_id):
     title=None
     try:
         devData = Dev.objects.get(id=dev_id)
-        github = devData.github
     except Dev.DoesNotExist:
         pass #pass
 
     if devData:
+        github = devData.github
+        asana = devData.asana
         title = 'Edit dev - ' + devData.first_name + ' ' + devData.last_name
         form = DevForm(request.POST or None, instance=devData)
         if form.is_valid():
@@ -116,7 +177,7 @@ def dev_edit_form(request, dev_id):
             devData.save()
             form.save()
             devEdited = True
-            response = send_github_invitation(devData.github) if devData.github != github else None
+            set_admin_permissions(devData, github, asana)
     else:
         #no such dev
         title = 'No such dev'
