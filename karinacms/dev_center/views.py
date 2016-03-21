@@ -64,6 +64,25 @@ def user_login(request):
     return render(request, 'dev_center/login.html', context)
 
 
+def parse_message(message):
+    hours = 0
+    minutes = 0
+    if '#time' in message:
+        time_tag = message.split('#time')[1]
+        if 'h' in time_tag:
+            hours_split = time_tag.split('h')
+            hours = int(hours_split[0])
+            minutes = int(hours_split[1].split('m')[0]) if 'm' in hours_split else 0
+
+        elif 'm' in time_tag:
+            minutes = int(time_tag.split('m')[0])
+
+    seconds = hours * 3600
+    seconds += minutes * 60
+
+    return seconds
+
+
 @login_required
 def set_admin_permissions(devData, github, asana):
     workspaces = get_asana_workspaces()
@@ -143,21 +162,30 @@ def get_github_commits(req):
                      auth=(settings.GIT_USER, settings.GIT_ACCESS_TOKEN))
     resp_json = response.json()
     repos = [r['name'] for r in resp_json]
-    commits = []
+    responses = {}
 
     for repo in repos:
         response = requests.get('https://api.github.com/repos/onitsoft/' + repo + '/commits',
                                 auth=(settings.GIT_USER, settings.GIT_ACCESS_TOKEN))
-        commits.append(response.json())
+        responses[repo] = response.json()
 
-    a = 1
-    for commit in commits:
-        for i in commit:
-            if a == 1:
-                print i
-                a+=1
-            #print i['committer']['login'], i['commit']['message']
-    return resp_json
+    hours_worked = {'repo': {}, 'devs': {}}
+    for repo, commits in responses.iteritems():
+        for commit in commits:
+            time_worked = parse_message(commit['commit']['message'])
+
+            if repo in hours_worked['repo']:
+                hours_worked['repo'][repo] += time_worked
+            else:
+                hours_worked['repo'][repo] = time_worked
+
+            commiter = commit['commit']['committer']['name']
+            if commiter in hours_worked['devs']:
+                hours_worked['devs'] [commiter] += time_worked
+            else:
+                hours_worked['devs'] [commiter] = time_worked
+
+    return hours_worked
 
 
 @login_required
@@ -165,7 +193,6 @@ def dev_form(request, campaign_name='eartohear.info'):
     campaign = None
     try:
         campaign = Campaign.objects.get(name=campaign_name)
-        print campaign
     except Campaign.DoesNotExist:
         pass  # do stuff
 
@@ -344,11 +371,11 @@ def status_list(request):
 @login_required
 def hours_list(request):
     working_hours = DevHours.objects.all()
-    a = get_github_commits(request)
+    hours_worked = get_github_commits(request)
     form = DevHoursForm(request.POST or None)
     if form.is_valid():
         hours = form.save()
-    context_dict = {'hours': working_hours, 'form': form, 'obj_type': 'Hours'}
+    context_dict = {'hours': working_hours, 'form': form, 'obj_type': 'Hours', 'hours_worked': hours_worked}
     return render(request, 'dev_center/hours_list.html', context_dict)
 
 

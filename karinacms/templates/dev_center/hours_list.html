@@ -1,44 +1,69 @@
 {% extends "dev_center/common/base.html" %}
-{% block title %}Products{% endblock %}
+{% block title %}Hours Worked{% endblock %}
 {% block content %}
-<h1>Hours</h1>
-	{% if hours %}
-	    <div class="tbl">
-	        <div style="font-weight:bold;" class="row">
-	        	<div class="col col-lg-3">
-	                Name
-	            </div>
+<h1>Hours Worked</h1>
 
-	            <div class="col col-lg-3">
-	                Description
-	            </div>
+<h2>Repositories</h2>
+<div class="tbl">
+	<div style="font-weight:bold;" class="row">
+		<div class="col-lg-8">
+			Repository
+	</div>
+	<div style="font-weight:bold;" class="row">
+		<div class="col-lg-4">
+			Hours Worked
+	</div>
+    </div>
+    </div>
 
-	            <div class="col col-lg-3">
-	                Dev count
-	            </div>
-	            <div class="col col-lg-3">
-	                Actions
-	            </div>
-	        </div>
-	        <div id="result_set">
-	        	{% include 'common/generic_list.html' with obj=products objStr="product" %}
-	        </div>
-	    </div>
-	{% else %}
-	        <div style="row">
-	            <div class="col-lg-12">
-	                No working hours are currently available right now
-	            </div>
-	        </div>
+{% for key, values in hours_worked.items %}
+	{% if key == 'repo' %}
+		{% for k, v in values.items %}
+			<div class="row">
+				<div class="col-lg-8">
+					{{k}}
+				</div>
+			<div class="row">
+				<div class="col-lg-4">
+					{{v}} Segs
+				</div>
+			</div>
+			</div>
+		{% endfor %}
 	{% endif %}
-	{% if productAdded %}
-	<div style="row">
-	    <div class="col-lg-12">
-	    	<span class="success">
-	    		The product was added successfully
-	    	</span>
-	    </div>
-   </div>
+{% endfor %}
+</div>
+
+<h2>Developers</h2>
+<div class="tbl">
+	<div style="font-weight:bold;" class="row">
+		<div class="col-lg-8">
+			Developer
+	</div>
+	<div style="font-weight:bold;" class="row">
+		<div class="col-lg-4">
+			Hours Worked
+	</div>
+    </div>
+    </div>
+
+{% for key, values in hours_worked.items %}
+	{% if key == 'devs' %}
+		{% for k, v in values.items %}
+			<div class="row">
+				<div class="col-lg-8">
+					{{k}}
+				</div>
+			<div class="row">
+				<div class="col-lg-4">
+					{{v}} Segs
+				</div>
+			</div>
+			</div>
+		{% endfor %}
 	{% endif %}
+{% endfor %}
+</div>
 	{% include "genericForm.html" %}
 {% endblock %}
+
