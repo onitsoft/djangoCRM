@@ -57,3 +57,11 @@ class DevComment(models.Model):
 	time = models.DateTimeField(auto_now=True)
 	# admin_id = models.ForeignKey(Users.user)
 
+
+class DevHours(models.Model):
+	dev = models.ForeignKey(Dev)
+	since = models.DateField(auto_now=True)
+	until = models.DateField(auto_now=True)
+	product = models.ForeignKey(Product)
+	def __unicode__(self):
+		return self.dev

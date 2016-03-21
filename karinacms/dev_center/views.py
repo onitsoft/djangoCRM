@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
-from .forms import DevForm, CampaignForm, DevCommentForm, UserForm, UserInfoForm, ProductForm, DevStatusForm
-from .models import Campaign, Dev, DevComment, DevStatus, Product
+from .forms import DevForm, CampaignForm, DevCommentForm, UserForm, UserInfoForm, ProductForm, DevStatusForm, DevHoursForm
+from .models import Campaign, Dev, DevComment, DevStatus, Product, DevHours
 from django.http import HttpResponseRedirect
 from datetime import datetime
 
@@ -64,14 +64,16 @@ def user_login(request):
     return render(request, 'dev_center/login.html', context)
 
 
+@login_required
 def set_admin_permissions(devData, github, asana):
-        workspaces = get_asana_workspaces()
-        send_github_invitation(devData.github) if devData.github != github or devData.status.name != 'inactive' else None
-        send_asana_invitation(devData.asana, workspaces) if devData.asana != asana or devData.status.name != 'inactive' else None
-        revoke_github_permissions(devData.github) if devData.status.name == 'inactive' else None
-        revoke_asana_permissions(devData.asana, workspaces) if devData.status.name == 'inactive' else None
+    workspaces = get_asana_workspaces()
+    send_github_invitation(devData.github) if devData.github != github or devData.status.name != 'inactive' else None
+    send_asana_invitation(devData.asana, workspaces) if devData.asana != asana or devData.status.name != 'inactive' else None
+    revoke_github_permissions(devData.github) if devData.status.name == 'inactive' else None
+    revoke_asana_permissions(devData.asana, workspaces) if devData.status.name == 'inactive' else None
 
 
+@login_required
 def send_github_invitation(user):
     # Sends a github invitation to the Team to the selected User.
     # User MUST be a username. Can't be an email.
@@ -81,6 +83,7 @@ def send_github_invitation(user):
     return r
 
 
+@login_required
 def revoke_github_permissions(user):
     # If the user is set to inactive, permissions to the user are denied
 
@@ -90,6 +93,7 @@ def revoke_github_permissions(user):
     return r
 
 
+@login_required
 def get_asana_workspaces():
     # Gets all projects available
     # Todo: Selectable project invitation.
@@ -103,6 +107,7 @@ def get_asana_workspaces():
     return workspaces
 
 
+@login_required
 def send_asana_invitation(user, workspaces):
     # Sends an invitation to each of the available workspaces.
 
@@ -116,6 +121,7 @@ def send_asana_invitation(user, workspaces):
     return responses
 
 
+@login_required
 def revoke_asana_permissions(user, workspaces):
     # If the user is set to inactive, permissions to the user are denied
 
@@ -128,6 +134,30 @@ def revoke_asana_permissions(user, workspaces):
 
     return responses
 
+
+@login_required
+def get_github_commits(req):
+    # Gets github
+
+    response = requests.get('https://api.github.com/orgs/onitsoft/repos',
+                     auth=(settings.GIT_USER, settings.GIT_ACCESS_TOKEN))
+    resp_json = response.json()
+    repos = [r['name'] for r in resp_json]
+    commits = []
+
+    for repo in repos:
+        response = requests.get('https://api.github.com/repos/onitsoft/' + repo + '/commits',
+                                auth=(settings.GIT_USER, settings.GIT_ACCESS_TOKEN))
+        commits.append(response.json())
+
+    a = 1
+    for commit in commits:
+        for i in commit:
+            if a == 1:
+                print i
+                a+=1
+            #print i['committer']['login'], i['commit']['message']
+    return resp_json
 
 
 @login_required
@@ -252,7 +282,7 @@ def delete_obj(request, obj_type, obj_id):
 
 
 @login_required
-def edit_obj (request, obj_type, obj_id):
+def edit_obj(request, obj_type, obj_id):
     if obj_type == 'campaign':
         model = Campaign
         form_class = CampaignForm
@@ -309,6 +339,17 @@ def status_list(request):
         statusAdded = True
     context_dict = {'statuses': statuses, 'form': form, 'statusAdded': statusAdded, 'obj_type': 'Status'}
     return render(request, 'dev_center/status_list.html', context_dict)
+
+
+@login_required
+def hours_list(request):
+    working_hours = DevHours.objects.all()
+    a = get_github_commits(request)
+    form = DevHoursForm(request.POST or None)
+    if form.is_valid():
+        hours = form.save()
+    context_dict = {'hours': working_hours, 'form': form, 'obj_type': 'Hours'}
+    return render(request, 'dev_center/hours_list.html', context_dict)
 
 
 @login_required

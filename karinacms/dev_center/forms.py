@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Dev, Campaign, DevComment, DevStatus, UserInfo, Product
+from .models import Dev, Campaign, DevComment, DevStatus, UserInfo, Product, DevHours
 
 class BootstrapForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
@@ -30,6 +30,11 @@ class CampaignForm(BootstrapForm):
 	class Meta:
 		model = Campaign
 		fields = ('name', 'description',)
+
+class DevHoursForm(BootstrapForm):
+	class Meta:
+		model = DevHours
+		fields = ('dev', 'product',)
 
 class DevStatusForm(BootstrapForm):
 	class Meta:
