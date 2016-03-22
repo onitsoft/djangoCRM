@@ -117,7 +117,10 @@ STATIC_URL = '/static/'
 
 # Github Credentials
 API_GITHUB_URL = 'https://api.github.com/'
-GIT_MEMBERSHIP = 'orgs/onitsoft/memberships/'
+GIT_ORGANIZATION = 'onitsoft'
+GIT_MEMBERSHIP = 'orgs/' + GIT_ORGANIZATION + '/memberships/'
+GIT_GET_REPOS = 'orgs/' + GIT_ORGANIZATION + '/repos'
+GIT_REPOS = 'repos/' + GIT_ORGANIZATION + '/'
 GIT_USER = ''
 GIT_ACCESS_TOKEN = ''
 

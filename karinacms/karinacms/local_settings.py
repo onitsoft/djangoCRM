@@ -3,7 +3,7 @@
 
 # Git Credentials
 GIT_USER = 'lucasarana'
-GIT_ACCESS_TOKEN = 'eb27df5465aac2c76624e199316961e93abe9fd3'
+GIT_ACCESS_TOKEN = 'c099d0c63cea97469cb18ae85c6cd44469a5d2c0'
 
 # Asana Credentials
 ASANA_USER = 'lucasarana38@gmail.com'

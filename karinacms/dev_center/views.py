@@ -14,6 +14,7 @@ from .custom_permissions import PostOnly
 from karinacms import settings
 import requests
 import json
+import re
 
 # import sys
 # sys.path.insert(0, '/path/to/application/app/folder')
@@ -65,17 +66,12 @@ def user_login(request):
 
 
 def parse_message(message):
-    hours = 0
-    minutes = 0
+    hours = minutes = 0
     if '#time' in message:
-        time_tag = message.split('#time')[1]
-        if 'h' in time_tag:
-            hours_split = time_tag.split('h')
-            hours = int(hours_split[0])
-            minutes = int(hours_split[1].split('m')[0]) if 'm' in hours_split else 0
-
-        elif 'm' in time_tag:
-            minutes = int(time_tag.split('m')[0])
+        time_tag = str(message.split('#time')[1])
+        time_spent = [int(s) for s in re.findall(r'\d+', time_tag)]
+        hours = time_spent[0]
+        minutes = time_spent[1] if len(time_spent) > 1 else 0
 
     seconds = hours * 3600
     seconds += minutes * 60
@@ -86,14 +82,14 @@ def parse_message(message):
 @login_required
 def set_admin_permissions(devData, github, asana):
     workspaces = get_asana_workspaces()
-    send_github_invitation(devData.github) if devData.github != github or devData.status.name != 'inactive' else None
-    send_asana_invitation(devData.asana, workspaces) if devData.asana != asana or devData.status.name != 'inactive' else None
-    revoke_github_permissions(devData.github) if devData.status.name == 'inactive' else None
-    revoke_asana_permissions(devData.asana, workspaces) if devData.status.name == 'inactive' else None
+    send_github_invitation(devData, devData.github) if devData.github != github or devData.status.name != 'inactive' else None
+    send_asana_invitation(devData, devData.asana, workspaces) if devData.asana != asana or devData.status.name != 'inactive' else None
+    revoke_github_permissions(devData, devData.github) if devData.status.name == 'inactive' else None
+    revoke_asana_permissions(devData, devData.asana, workspaces) if devData.status.name == 'inactive' else None
 
 
 @login_required
-def send_github_invitation(user):
+def send_github_invitation(req, user):
     # Sends a github invitation to the Team to the selected User.
     # User MUST be a username. Can't be an email.
 
@@ -103,7 +99,7 @@ def send_github_invitation(user):
 
 
 @login_required
-def revoke_github_permissions(user):
+def revoke_github_permissions(req, user):
     # If the user is set to inactive, permissions to the user are denied
 
     r = requests.delete(settings.API_GITHUB_URL + settings.GIT_MEMBERSHIP + user,
@@ -127,7 +123,7 @@ def get_asana_workspaces():
 
 
 @login_required
-def send_asana_invitation(user, workspaces):
+def send_asana_invitation(req, user, workspaces):
     # Sends an invitation to each of the available workspaces.
 
     responses = []
@@ -141,7 +137,7 @@ def send_asana_invitation(user, workspaces):
 
 
 @login_required
-def revoke_asana_permissions(user, workspaces):
+def revoke_asana_permissions(req, user, workspaces):
     # If the user is set to inactive, permissions to the user are denied
 
     responses = []
@@ -155,22 +151,54 @@ def revoke_asana_permissions(user, workspaces):
 
 
 @login_required
-def get_github_commits(req):
-    # Gets github
+def get_commits_and_hours_worked(req, params):
+    # Calls functions to get all commits and parse them into hours worked
 
-    response = requests.get('https://api.github.com/orgs/onitsoft/repos',
-                     auth=(settings.GIT_USER, settings.GIT_ACCESS_TOKEN))
+    repositories = get_github_repos(req)
+    commit_responses = get_all_github_commits(req, repositories, params)
+    hours_worked = get_hours_worked(commit_responses)
+
+    return hours_worked
+
+@login_required
+def get_github_repos(req):
+    # Gets All github repos of the Organization (GIT_ORGANIZATION)
+
+    response = requests.get(settings.API_GITHUB_URL + settings.GIT_GET_REPOS,
+                            auth=(settings.GIT_USER, settings.GIT_ACCESS_TOKEN))
     resp_json = response.json()
     repos = [r['name'] for r in resp_json]
-    responses = {}
 
+    return repos
+
+
+@login_required
+def get_all_github_commits(req, repos, params):
+    # Gets all commits from the repos of the organization
+
+    commit_responses = {}
     for repo in repos:
-        response = requests.get('https://api.github.com/repos/onitsoft/' + repo + '/commits',
+        response = requests.get(settings.API_GITHUB_URL + settings.GIT_REPOS + repo + '/commits',
+                                params=params,
                                 auth=(settings.GIT_USER, settings.GIT_ACCESS_TOKEN))
-        responses[repo] = response.json()
+        commit_responses[repo] = response.json()
+
+        while 'link' in response.headers and 'next' in response.headers['link']:
+            link_next_page = response.headers['link'].split('; rel="next"')[0].replace('<', '').replace('>', '')
+            response = requests.get(link_next_page,
+                                    params=params,
+                                    auth=(settings.GIT_USER, settings.GIT_ACCESS_TOKEN))
+
+            commit_responses[repo] = response.json() + commit_responses[repo]
+
+    return commit_responses
+
+
+def get_hours_worked(commit_responses):
+    # Parse Info into hours works for each repo and dev available
 
     hours_worked = {'repo': {}, 'devs': {}}
-    for repo, commits in responses.iteritems():
+    for repo, commits in commit_responses.iteritems():
         for commit in commits:
             time_worked = parse_message(commit['commit']['message'])
 
@@ -181,9 +209,9 @@ def get_github_commits(req):
 
             commiter = commit['commit']['committer']['name']
             if commiter in hours_worked['devs']:
-                hours_worked['devs'] [commiter] += time_worked
+                hours_worked['devs'][commiter] += time_worked
             else:
-                hours_worked['devs'] [commiter] = time_worked
+                hours_worked['devs'][commiter] = time_worked
 
     return hours_worked
 
@@ -205,9 +233,9 @@ def dev_form(request, campaign_name='eartohear.info'):
         dev.campaign = campaign
         dev.save()
         context_dict['success'] = True
-        git_response = send_github_invitation(dev.github) if dev.github else None
-        asana_responses = send_asana_invitation(dev.asana) if dev.asana else None
-        # Todo: Show if exceptions appear/success
+        git_response = send_github_invitation(request, dev.github) if dev.github else None
+        asana_responses = send_asana_invitation(request, dev.asana) if dev.asana else None
+        # Todo: Show exceptions and success
 
     return render(request, 'dev_center/dev_form.html', context_dict)
 
@@ -370,12 +398,17 @@ def status_list(request):
 
 @login_required
 def hours_list(request):
-    working_hours = DevHours.objects.all()
-    hours_worked = get_github_commits(request)
+    params = {'per_page': 100}
     form = DevHoursForm(request.POST or None)
     if form.is_valid():
         hours = form.save()
-    context_dict = {'hours': working_hours, 'form': form, 'obj_type': 'Hours', 'hours_worked': hours_worked}
+        params['author'] = str(form.cleaned_data['dev'].github) if form.cleaned_data['dev'] else None
+        print form.cleaned_data['since']
+        print form.cleaned_data['until']
+        hours_worked = get_commits_and_hours_worked(request, params)
+    else:
+        hours_worked = get_commits_and_hours_worked(request, params)
+    context_dict = {'form': form, 'obj_type': 'Hours', 'hours_worked': hours_worked}
     return render(request, 'dev_center/hours_list.html', context_dict)
 
 
@@ -383,6 +416,7 @@ def hours_list(request):
 def user_logout(request):
     logout(request)
     return HttpResponseRedirect('/devs/')
+
 
 def index(request):
     devs = Dev.objects.all().order_by('phone')

@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from .models import Dev, Campaign, DevComment, DevStatus, UserInfo, Product, DevHours
+from django.forms.extras.widgets import SelectDateWidget
 
 class BootstrapForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
@@ -32,9 +33,11 @@ class CampaignForm(BootstrapForm):
 		fields = ('name', 'description',)
 
 class DevHoursForm(BootstrapForm):
+	since = forms.DateField(widget=SelectDateWidget)
+	until = forms.CharField(widget=SelectDateWidget)
 	class Meta:
 		model = DevHours
-		fields = ('dev', 'product',)
+		fields = ('dev', 'since', 'until',)
 
 class DevStatusForm(BootstrapForm):
 	class Meta:
