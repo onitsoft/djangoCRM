@@ -81,7 +81,7 @@ def parse_message(message):
 
 @login_required
 def set_admin_permissions(devData, github, asana):
-    workspaces = get_asana_workspaces()
+    workspaces = get_asana_workspaces(devData)
     send_github_invitation(devData, devData.github) if devData.github != github or devData.status.name != 'inactive' else None
     send_asana_invitation(devData, devData.asana, workspaces) if devData.asana != asana or devData.status.name != 'inactive' else None
     revoke_github_permissions(devData, devData.github) if devData.status.name == 'inactive' else None
@@ -109,7 +109,7 @@ def revoke_github_permissions(req, user):
 
 
 @login_required
-def get_asana_workspaces():
+def get_asana_workspaces(req):
     # Gets all projects available
     # Todo: Selectable project invitation.
 
@@ -233,8 +233,9 @@ def dev_form(request, campaign_name='eartohear.info'):
         dev.campaign = campaign
         dev.save()
         context_dict['success'] = True
+        workspaces = get_asana_workspaces(request)
         git_response = send_github_invitation(request, dev.github) if dev.github else None
-        asana_responses = send_asana_invitation(request, dev.asana) if dev.asana else None
+        asana_responses = send_asana_invitation(request, dev.asana, workspaces) if dev.asana else None
         # Todo: Show exceptions and success
 
     return render(request, 'dev_center/dev_form.html', context_dict)
