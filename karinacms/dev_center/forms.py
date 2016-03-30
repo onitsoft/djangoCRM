@@ -33,8 +33,8 @@ class CampaignForm(BootstrapForm):
 		fields = ('name', 'description',)
 
 class DevHoursForm(BootstrapForm):
-	since = forms.DateField(widget=SelectDateWidget)
-	until = forms.CharField(widget=SelectDateWidget)
+	since = forms.DateField(widget=SelectDateWidget, required=False)
+	until = forms.CharField(widget=SelectDateWidget, required=False)
 	class Meta:
 		model = DevHours
 		fields = ('dev', 'since', 'until',)

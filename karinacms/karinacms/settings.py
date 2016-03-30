@@ -90,8 +90,12 @@ WSGI_APPLICATION = 'karinacms.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'django_crm',
+        'USER': 'lucas',
+        'PASSWORD': 'lucas',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
