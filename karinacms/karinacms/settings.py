@@ -24,7 +24,8 @@ LOGIN_URL = '/devs/login/'
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '6!918+lne$pvkoao4vbhzs_&4dv&4p=l6ycf9+))k#+er)&o(w'
+#SECRET_KEY = '6!918+lne$pvkoao4vbhzs_&4dv&4p=l6ycf9+))k#+er)&o(w'
+SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -92,8 +93,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'django_crm',
-        'USER': 'lucas',
-        'PASSWORD': 'lucas',
+        'USER': os.environ['DBUSER'],
+        'PASSWORD': os.environ['DBPASSWORD'],
         'HOST': 'localhost',
         'PORT': '',
     }
@@ -119,22 +120,25 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 
-# Github Credentials
+# Git Credentials
+GIT_USER = os.environ['GIT_USER']
+GIT_ORGANIZATION = os.environ['GIT_ORGANIZATION']
+GIT_ACCESS_TOKEN = os.environ['GIT_ACCESS_TOKEN']
+
+# Asana Credentials
+ASANA_USER = os.environ['ASANA_USER']
+ASANA_ACCESS_TOKEN = os.environ['ASANA_ACCESS_TOKEN']
+
+
+# Github commands
 API_GITHUB_URL = 'https://api.github.com/'
-GIT_ORGANIZATION = 'onitsoft'
 GIT_MEMBERSHIP = 'orgs/' + GIT_ORGANIZATION + '/memberships/'
 GIT_GET_REPOS = 'orgs/' + GIT_ORGANIZATION + '/repos'
 GIT_REPOS = 'repos/' + GIT_ORGANIZATION + '/'
-GIT_USER = ''
-GIT_ACCESS_TOKEN = ''
 
-# Asana Credentials
+
+# Asana commands
 API_ASANA_URL = 'https://app.asana.com/api/1.0/'
 ASANA_WORKSPACES = 'workspaces/'
 ASANA_ADD_USER = '/addUser/'
 ASANA_DELETE_USER = '/removeUser/'
-
-try:
-    from local_settings import *
-except ImportError:
-    pass
