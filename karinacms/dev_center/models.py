@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-# from django.conf import settings 
+
+# from django.conf import settings
 # Create your models here.
 class UserInfo(models.Model):
 	user = models.OneToOneField(User)
@@ -57,3 +58,10 @@ class DevComment(models.Model):
 	time = models.DateTimeField(auto_now=True)
 	# admin_id = models.ForeignKey(Users.user)
 
+
+class DevHours(models.Model):
+	dev = models.ForeignKey(Dev)
+	since = models.DateField()
+	until = models.DateField()
+	def __unicode__(self):
+		return self.dev

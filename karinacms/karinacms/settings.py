@@ -90,8 +90,12 @@ WSGI_APPLICATION = 'karinacms.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'django_crm',
+        'USER': 'lucas',
+        'PASSWORD': 'lucas',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
@@ -113,3 +117,24 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# Github Credentials
+API_GITHUB_URL = 'https://api.github.com/'
+GIT_ORGANIZATION = 'onitsoft'
+GIT_MEMBERSHIP = 'orgs/' + GIT_ORGANIZATION + '/memberships/'
+GIT_GET_REPOS = 'orgs/' + GIT_ORGANIZATION + '/repos'
+GIT_REPOS = 'repos/' + GIT_ORGANIZATION + '/'
+GIT_USER = ''
+GIT_ACCESS_TOKEN = ''
+
+# Asana Credentials
+API_ASANA_URL = 'https://app.asana.com/api/1.0/'
+ASANA_WORKSPACES = 'workspaces/'
+ASANA_ADD_USER = '/addUser/'
+ASANA_DELETE_USER = '/removeUser/'
+
+try:
+    from local_settings import *
+except ImportError:
+    pass

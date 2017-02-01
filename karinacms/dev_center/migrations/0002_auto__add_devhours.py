@@ -8,90 +8,20 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'UserInfo'
-        db.create_table(u'dev_center_userinfo', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('user', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['auth.User'], unique=True)),
-            ('site', self.gf('django.db.models.fields.URLField')(max_length=200, blank=True)),
-        ))
-        db.send_create_signal(u'dev_center', ['UserInfo'])
-
-        # Adding model 'Campaign'
-        db.create_table(u'dev_center_campaign', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('description', self.gf('django.db.models.fields.CharField')(max_length=512, blank=True)),
-            ('view', self.gf('django.db.models.fields.CharField')(max_length=50, blank=True)),
-        ))
-        db.send_create_signal(u'dev_center', ['Campaign'])
-
-        # Adding model 'Product'
-        db.create_table(u'dev_center_product', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('description', self.gf('django.db.models.fields.CharField')(max_length=512, blank=True)),
-        ))
-        db.send_create_signal(u'dev_center', ['Product'])
-
-        # Adding model 'DevStatus'
-        db.create_table(u'dev_center_devstatus', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('description', self.gf('django.db.models.fields.CharField')(max_length=512, blank=True)),
-        ))
-        db.send_create_signal(u'dev_center', ['DevStatus'])
-
-        # Adding model 'Dev'
-        db.create_table(u'dev_center_dev', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('campaign', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='campaign_devs', null=True, to=orm['dev_center.Campaign'])),
-            ('product', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='product_devs', null=True, to=orm['dev_center.Product'])),
-            ('status', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='status_devs', null=True, to=orm['dev_center.DevStatus'])),
-            ('campaign_url', self.gf('django.db.models.fields.CharField')(max_length=100, blank=True)),
-            ('phone', self.gf('django.db.models.fields.CharField')(max_length=15)),
-            ('email', self.gf('django.db.models.fields.CharField')(max_length=60, blank=True)),
-            ('asana', self.gf('django.db.models.fields.CharField')(max_length=60, blank=True)),
-            ('github', self.gf('django.db.models.fields.CharField')(max_length=60, blank=True)),
-            ('slack', self.gf('django.db.models.fields.CharField')(max_length=60, blank=True)),
-            ('first_name', self.gf('django.db.models.fields.CharField')(max_length=40)),
-            ('last_name', self.gf('django.db.models.fields.CharField')(max_length=40)),
-            ('city', self.gf('django.db.models.fields.CharField')(max_length=50, blank=True)),
-            ('comment', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
-            ('ip', self.gf('django.db.models.fields.CharField')(max_length=30, blank=True)),
-            ('agent', self.gf('django.db.models.fields.CharField')(max_length=60, blank=True)),
-        ))
-        db.send_create_signal(u'dev_center', ['Dev'])
-
-        # Adding model 'DevComment'
-        db.create_table(u'dev_center_devcomment', (
+        # Adding model 'DevHours'
+        db.create_table(u'dev_center_devhours', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('dev', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['dev_center.Dev'])),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=512)),
-            ('comment', self.gf('django.db.models.fields.TextField')(max_length=1024)),
-            ('time', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
+            ('since', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
+            ('until', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
+            ('product', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['dev_center.Product'])),
         ))
-        db.send_create_signal(u'dev_center', ['DevComment'])
+        db.send_create_signal(u'dev_center', ['DevHours'])
 
 
     def backwards(self, orm):
-        # Deleting model 'UserInfo'
-        db.delete_table(u'dev_center_userinfo')
-
-        # Deleting model 'Campaign'
-        db.delete_table(u'dev_center_campaign')
-
-        # Deleting model 'Product'
-        db.delete_table(u'dev_center_product')
-
-        # Deleting model 'DevStatus'
-        db.delete_table(u'dev_center_devstatus')
-
-        # Deleting model 'Dev'
-        db.delete_table(u'dev_center_dev')
-
-        # Deleting model 'DevComment'
-        db.delete_table(u'dev_center_devcomment')
+        # Deleting model 'DevHours'
+        db.delete_table(u'dev_center_devhours')
 
 
     models = {
@@ -165,6 +95,14 @@ class Migration(SchemaMigration):
             'time': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '512'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"})
+        },
+        u'dev_center.devhours': {
+            'Meta': {'object_name': 'DevHours'},
+            'dev': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['dev_center.Dev']"}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'product': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['dev_center.Product']"}),
+            'since': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
+            'until': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
         },
         u'dev_center.devstatus': {
             'Meta': {'object_name': 'DevStatus'},
