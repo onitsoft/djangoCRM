@@ -1,0 +1,69 @@
+{% extends "dev_center/common/base.html" %}
+{% block title %}Hours Worked{% endblock %}
+{% block content %}
+<h1>Hours Worked</h1>
+
+<h2>Repositories</h2>
+<div class="tbl">
+	<div style="font-weight:bold;" class="row">
+		<div class="col-lg-8">
+			Repository
+	</div>
+	<div style="font-weight:bold;" class="row">
+		<div class="col-lg-4">
+			Hours Worked
+	</div>
+    </div>
+    </div>
+
+{% for key, values in hours_worked.items %}
+	{% if key == 'repo' %}
+		{% for k, v in values.items %}
+			<div class="row">
+				<div class="col-lg-8">
+					{{k}}
+				</div>
+			<div class="row">
+				<div class="col-lg-4">
+					{{v}} Segs
+				</div>
+			</div>
+			</div>
+		{% endfor %}
+	{% endif %}
+{% endfor %}
+</div>
+
+<h2>Developers</h2>
+<div class="tbl">
+	<div style="font-weight:bold;" class="row">
+		<div class="col-lg-8">
+			Developer
+	</div>
+	<div style="font-weight:bold;" class="row">
+		<div class="col-lg-4">
+			Hours Worked
+	</div>
+    </div>
+    </div>
+
+{% for key, values in hours_worked.items %}
+	{% if key == 'devs' %}
+		{% for k, v in values.items %}
+			<div class="row">
+				<div class="col-lg-8">
+					{{k}}
+				</div>
+			<div class="row">
+				<div class="col-lg-4">
+					{{v}} Segs
+				</div>
+			</div>
+			</div>
+		{% endfor %}
+	{% endif %}
+{% endfor %}
+</div>
+	{% include "genericForm.html" %}
+{% endblock %}
+

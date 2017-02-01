@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-# from django.conf import settings 
+
+# from django.conf import settings
 # Create your models here.
 class UserInfo(models.Model):
 	user = models.OneToOneField(User)
@@ -22,19 +23,22 @@ class Product(models.Model):
 	def __unicode__(self):
 		return self.name
 
-class LeadStatus(models.Model):
+class DevStatus(models.Model):
 	name = models.CharField(max_length=255)
 	description = models.CharField(max_length=512, blank=True)
 	def __unicode__(self):
 		return self.name
 
-class Lead(models.Model):
-	campaign = models.ForeignKey(Campaign, null=True, blank=True, related_name='campaign_leads')
-	product = models.ForeignKey(Product, null=True, blank=True, related_name='product_leads')
-	status = models.ForeignKey(LeadStatus, null=True, blank=True, related_name='status_leads')
+class Dev(models.Model):
+	campaign = models.ForeignKey(Campaign, null=True, blank=True, related_name='campaign_devs')
+	product = models.ForeignKey(Product, null=True, blank=True, related_name='product_devs')
+	status = models.ForeignKey(DevStatus, null=True, blank=True, related_name='status_devs')
 	campaign_url = models.CharField(max_length=100, blank=True)
 	phone = models.CharField(max_length=15)
 	email = models.CharField(max_length=60, blank=True)
+	asana = models.CharField(max_length=60, blank=True)
+	github = models.CharField(max_length=60, blank=True)
+	slack = models.CharField(max_length=60, blank=True)
 	first_name = models.CharField(max_length=40)
 	last_name = models.CharField(max_length=40)
 	city = models.CharField(max_length=50, blank=True)
@@ -46,11 +50,18 @@ class Lead(models.Model):
 	def __unicode__(self):
 		return '%s %s' % (self.first_name, self.last_name)
 
-class LeadComment(models.Model):
-	lead = models.ForeignKey(Lead)
+class DevComment(models.Model):
+	dev = models.ForeignKey(Dev)
 	user = models.ForeignKey(User)
 	title = models.CharField(max_length=512, null=False)
 	comment = models.TextField(max_length=1024, null=False)
 	time = models.DateTimeField(auto_now=True)
 	# admin_id = models.ForeignKey(Users.user)
 
+
+class DevHours(models.Model):
+	dev = models.ForeignKey(Dev)
+	since = models.DateField()
+	until = models.DateField()
+	def __unicode__(self):
+		return self.dev

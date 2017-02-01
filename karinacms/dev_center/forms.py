@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Lead, Campaign, LeadComment, LeadStatus, UserInfo, Product
+from .models import Dev, Campaign, DevComment, DevStatus, UserInfo, Product, DevHours
+from django.forms.extras.widgets import SelectDateWidget
 
 class BootstrapForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
@@ -31,9 +32,16 @@ class CampaignForm(BootstrapForm):
 		model = Campaign
 		fields = ('name', 'description',)
 
-class LeadStatusForm(BootstrapForm):
+class DevHoursForm(BootstrapForm):
+	since = forms.DateField(widget=SelectDateWidget, required=False)
+	until = forms.CharField(widget=SelectDateWidget, required=False)
 	class Meta:
-		model = LeadStatus
+		model = DevHours
+		fields = ('dev', 'since', 'until',)
+
+class DevStatusForm(BootstrapForm):
+	class Meta:
+		model = DevStatus
 		fields = ('name', 'description',)
 
 class UserLoginForm(BootstrapForm):
@@ -43,22 +51,23 @@ class UserLoginForm(BootstrapForm):
 		model = User
 		fields = ('username', 'password',)
 
-class LeadForm(BootstrapForm):
+class DevForm(BootstrapForm):
 	class Meta:
-		model = Lead
+		model = Dev
 		fields = ('first_name', 'last_name', 'city', 'phone',
-				 'email', 'comment', 'status', 'campaign', 'product')
+				 'email', 'comment', 'status', 'campaign', 'product',
+				  'asana', 'github', 'slack')
 
 
-class leadCommentForm(BootstrapForm):
+class DevCommentForm(BootstrapForm):
 	title = forms.CharField(max_length=512, help_text="Summary of the call")
 	comment = forms.CharField(max_length=1024, widget=forms.Textarea, help_text="Description of the call")
 	def __init__(self, *args, **kwargs):
-	    super(leadCommentForm, self).__init__(*args, **kwargs)
+	    super(DevCommentForm, self).__init__(*args, **kwargs)
 	    self.fields['title'].widget.attrs['class'] = 'form-control'
 	    self.fields['comment'].widget.attrs['class'] = 'form-control'
 	class Meta: 
-		model = LeadComment
+		model = DevComment
 		fields = ('title', 'comment',)
 
 

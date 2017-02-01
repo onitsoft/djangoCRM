@@ -8,88 +8,32 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'UserInfo'
-        db.create_table(u'lead_center_userinfo', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('user', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['auth.User'], unique=True)),
-            ('site', self.gf('django.db.models.fields.URLField')(max_length=200, blank=True)),
-        ))
-        db.send_create_signal(u'lead_center', ['UserInfo'])
+        # Deleting field 'DevHours.product'
+        db.delete_column(u'dev_center_devhours', 'product_id')
 
-        # Adding model 'Campaign'
-        db.create_table(u'lead_center_campaign', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('description', self.gf('django.db.models.fields.CharField')(max_length=512, blank=True)),
-            ('view', self.gf('django.db.models.fields.CharField')(max_length=50, blank=True)),
-        ))
-        db.send_create_signal(u'lead_center', ['Campaign'])
 
-        # Adding model 'Product'
-        db.create_table(u'lead_center_product', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('description', self.gf('django.db.models.fields.CharField')(max_length=512, blank=True)),
-        ))
-        db.send_create_signal(u'lead_center', ['Product'])
+        # Changing field 'DevHours.since'
+        db.alter_column(u'dev_center_devhours', 'since', self.gf('django.db.models.fields.DateField')(auto_now=True))
 
-        # Adding model 'LeadStatus'
-        db.create_table(u'lead_center_leadstatus', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('description', self.gf('django.db.models.fields.CharField')(max_length=512, blank=True)),
-        ))
-        db.send_create_signal(u'lead_center', ['LeadStatus'])
-
-        # Adding model 'Lead'
-        db.create_table(u'lead_center_lead', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('campaign', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['lead_center.Campaign'], null=True)),
-            ('product', self.gf('django.db.models.fields.related.ForeignKey')(related_name='product_leads', null=True, to=orm['lead_center.Product'])),
-            ('status', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['lead_center.LeadStatus'], null=True)),
-            ('campaign_url', self.gf('django.db.models.fields.CharField')(max_length=100, null=True)),
-            ('phone', self.gf('django.db.models.fields.CharField')(max_length=15)),
-            ('email', self.gf('django.db.models.fields.CharField')(max_length=60, blank=True)),
-            ('first_name', self.gf('django.db.models.fields.CharField')(max_length=40)),
-            ('last_name', self.gf('django.db.models.fields.CharField')(max_length=40)),
-            ('city', self.gf('django.db.models.fields.CharField')(max_length=50, null=True)),
-            ('comment', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
-            ('ip', self.gf('django.db.models.fields.CharField')(max_length=30, null=True)),
-            ('agent', self.gf('django.db.models.fields.CharField')(max_length=60, null=True)),
-        ))
-        db.send_create_signal(u'lead_center', ['Lead'])
-
-        # Adding model 'LeadComment'
-        db.create_table(u'lead_center_leadcomment', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('lead', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['lead_center.Lead'])),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=512)),
-            ('comment', self.gf('django.db.models.fields.TextField')(max_length=1024)),
-            ('time', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
-        ))
-        db.send_create_signal(u'lead_center', ['LeadComment'])
-
+        # Changing field 'DevHours.until'
+        db.alter_column(u'dev_center_devhours', 'until', self.gf('django.db.models.fields.DateField')(auto_now=True))
 
     def backwards(self, orm):
-        # Deleting model 'UserInfo'
-        db.delete_table(u'lead_center_userinfo')
 
-        # Deleting model 'Campaign'
-        db.delete_table(u'lead_center_campaign')
+        # User chose to not deal with backwards NULL issues for 'DevHours.product'
+        raise RuntimeError("Cannot reverse this migration. 'DevHours.product' and its values cannot be restored.")
+        
+        # The following code is provided here to aid in writing a correct migration        # Adding field 'DevHours.product'
+        db.add_column(u'dev_center_devhours', 'product',
+                      self.gf('django.db.models.fields.related.ForeignKey')(to=orm['dev_center.Product']),
+                      keep_default=False)
 
-        # Deleting model 'Product'
-        db.delete_table(u'lead_center_product')
 
-        # Deleting model 'LeadStatus'
-        db.delete_table(u'lead_center_leadstatus')
+        # Changing field 'DevHours.since'
+        db.alter_column(u'dev_center_devhours', 'since', self.gf('django.db.models.fields.DateTimeField')(auto_now=True))
 
-        # Deleting model 'Lead'
-        db.delete_table(u'lead_center_lead')
-
-        # Deleting model 'LeadComment'
-        db.delete_table(u'lead_center_leadcomment')
-
+        # Changing field 'DevHours.until'
+        db.alter_column(u'dev_center_devhours', 'until', self.gf('django.db.models.fields.DateTimeField')(auto_now=True))
 
     models = {
         u'auth.group': {
@@ -128,51 +72,61 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
-        u'lead_center.campaign': {
+        u'dev_center.campaign': {
             'Meta': {'object_name': 'Campaign'},
             'description': ('django.db.models.fields.CharField', [], {'max_length': '512', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'view': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'})
         },
-        u'lead_center.lead': {
-            'Meta': {'object_name': 'Lead'},
-            'agent': ('django.db.models.fields.CharField', [], {'max_length': '60', 'null': 'True'}),
-            'campaign': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['lead_center.Campaign']", 'null': 'True'}),
-            'campaign_url': ('django.db.models.fields.CharField', [], {'max_length': '100', 'null': 'True'}),
-            'city': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True'}),
+        u'dev_center.dev': {
+            'Meta': {'object_name': 'Dev'},
+            'agent': ('django.db.models.fields.CharField', [], {'max_length': '60', 'blank': 'True'}),
+            'asana': ('django.db.models.fields.CharField', [], {'max_length': '60', 'blank': 'True'}),
+            'campaign': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'campaign_devs'", 'null': 'True', 'to': u"orm['dev_center.Campaign']"}),
+            'campaign_url': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
+            'city': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
             'comment': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'email': ('django.db.models.fields.CharField', [], {'max_length': '60', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '40'}),
+            'github': ('django.db.models.fields.CharField', [], {'max_length': '60', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'ip': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True'}),
+            'ip': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '40'}),
             'phone': ('django.db.models.fields.CharField', [], {'max_length': '15'}),
-            'product': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'product_leads'", 'null': 'True', 'to': u"orm['lead_center.Product']"}),
-            'status': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['lead_center.LeadStatus']", 'null': 'True'})
+            'product': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'product_devs'", 'null': 'True', 'to': u"orm['dev_center.Product']"}),
+            'slack': ('django.db.models.fields.CharField', [], {'max_length': '60', 'blank': 'True'}),
+            'status': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'status_devs'", 'null': 'True', 'to': u"orm['dev_center.DevStatus']"})
         },
-        u'lead_center.leadcomment': {
-            'Meta': {'object_name': 'LeadComment'},
+        u'dev_center.devcomment': {
+            'Meta': {'object_name': 'DevComment'},
             'comment': ('django.db.models.fields.TextField', [], {'max_length': '1024'}),
+            'dev': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['dev_center.Dev']"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'lead': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['lead_center.Lead']"}),
             'time': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '512'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"})
         },
-        u'lead_center.leadstatus': {
-            'Meta': {'object_name': 'LeadStatus'},
+        u'dev_center.devhours': {
+            'Meta': {'object_name': 'DevHours'},
+            'dev': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['dev_center.Dev']"}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'since': ('django.db.models.fields.DateField', [], {'auto_now': 'True', 'blank': 'True'}),
+            'until': ('django.db.models.fields.DateField', [], {'auto_now': 'True', 'blank': 'True'})
+        },
+        u'dev_center.devstatus': {
+            'Meta': {'object_name': 'DevStatus'},
             'description': ('django.db.models.fields.CharField', [], {'max_length': '512', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },
-        u'lead_center.product': {
+        u'dev_center.product': {
             'Meta': {'object_name': 'Product'},
             'description': ('django.db.models.fields.CharField', [], {'max_length': '512', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },
-        u'lead_center.userinfo': {
+        u'dev_center.userinfo': {
             'Meta': {'object_name': 'UserInfo'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'site': ('django.db.models.fields.URLField', [], {'max_length': '200', 'blank': 'True'}),
@@ -180,4 +134,4 @@ class Migration(SchemaMigration):
         }
     }
 
-    complete_apps = ['lead_center']
+    complete_apps = ['dev_center']

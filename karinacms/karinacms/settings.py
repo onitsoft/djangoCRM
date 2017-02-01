@@ -15,16 +15,17 @@ SETTINGS_DIR = os.path.dirname(__file__)
 PROJECT_PATH = os.path.join(SETTINGS_DIR, os.pardir)
 PROJECT_PATH = os.path.abspath(PROJECT_PATH)
 TEMPLATE_PATH = os.path.join(PROJECT_PATH, 'templates')
-TEMPLATE_PATH_LEADS = os.path.join(TEMPLATE_PATH, 'lead_center')
+TEMPLATE_PATH_LEADS = os.path.join(TEMPLATE_PATH, 'dev_center')
 TEMPLATE_PATH_LEADS_COMMON = os.path.join(TEMPLATE_PATH_LEADS, 'common')
 STATIC_PATH = os.path.join(PROJECT_PATH, 'static')
 STATIC_URL = '/static/'
-LOGIN_URL = '/leads/login/'
+LOGIN_URL = '/devs/login/'
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '6!918+lne$pvkoao4vbhzs_&4dv&4p=l6ycf9+))k#+er)&o(w'
+#SECRET_KEY = '6!918+lne$pvkoao4vbhzs_&4dv&4p=l6ycf9+))k#+er)&o(w'
+SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -44,7 +45,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'south',
-    'lead_center',
+    'dev_center',
     'rest_framework',
 )
 
@@ -90,8 +91,12 @@ WSGI_APPLICATION = 'karinacms.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'django_crm',
+        'USER': os.environ['DBUSER'],
+        'PASSWORD': os.environ['DBPASSWORD'],
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
@@ -113,3 +118,27 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# Git Credentials
+GIT_USER = os.environ['GIT_USER']
+GIT_ORGANIZATION = os.environ['GIT_ORGANIZATION']
+GIT_ACCESS_TOKEN = os.environ['GIT_ACCESS_TOKEN']
+
+# Asana Credentials
+ASANA_USER = os.environ['ASANA_USER']
+ASANA_ACCESS_TOKEN = os.environ['ASANA_ACCESS_TOKEN']
+
+
+# Github commands
+API_GITHUB_URL = 'https://api.github.com/'
+GIT_MEMBERSHIP = 'orgs/' + GIT_ORGANIZATION + '/memberships/'
+GIT_GET_REPOS = 'orgs/' + GIT_ORGANIZATION + '/repos'
+GIT_REPOS = 'repos/' + GIT_ORGANIZATION + '/'
+
+
+# Asana commands
+API_ASANA_URL = 'https://app.asana.com/api/1.0/'
+ASANA_WORKSPACES = 'workspaces/'
+ASANA_ADD_USER = '/addUser/'
+ASANA_DELETE_USER = '/removeUser/'
