@@ -1,10 +1,10 @@
-{% extends 'lead_center/common/base.html' %}
+{% extends 'dev_center/common/base.html' %}
 {% block title %}Register{% endblock %}
 {% block content %}
 		{% if registered %}
 			<div class="successMsg">
 				Thank you for registering, you can now 
-				<a href="/leads/login">Login!</a>
+				<a href="/devs/login">Login!</a>
 			<div>
 		{% else %}
 			<form method="POST" action="">

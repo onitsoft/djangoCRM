@@ -1,4 +1,4 @@
-{% extends "lead_center/common/base.html" %}
+{% extends "dev_center/common/base.html" %}
 {% block title %} {{title}} {% endblock %}
 {% block content %}
     <div>
@@ -11,13 +11,13 @@
     </div>
     <div>
         {% if form.is_valid %}
-            {% if leadEdited%}
+            {% if devEdited%}
                 <span lass="success">
-                    Lead edited successfully, thank you!
+                    Dev edited successfully, thank you!
                 </span>
             {% else %}
             <span lass="success">
-                Lead added successfully, thank you!
+                Dev added successfully, thank you!
             </span>
             {% endif %}
         {% endif %}

@@ -1,6 +1,6 @@
 from django.contrib import admin
-from lead_center.models import Campaign, Lead
+from dev_center.models import Campaign, Dev
 
 admin.site.register(Campaign);
-admin.site.register(Lead);
+admin.site.register(Dev);
 # Register your models here.

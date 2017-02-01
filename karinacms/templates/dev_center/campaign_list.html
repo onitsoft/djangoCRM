@@ -1,4 +1,4 @@
-{% extends "lead_center/common/base.html" %}
+{% extends "dev_center/common/base.html" %}
 {% block title %}Campaigns{% endblock %}
 {% block content %}
 <h1>Campaigns</h1>
@@ -15,14 +15,14 @@
 	        </div>
 
 	        <div class="col col-lg-3">
-	            Lead count 
+	            Dev count
 	        </div>
 	        <div class="col col-lg-3">
 	            Actions
 	        </div>
 	    </div>
 		<div id="result_set">
-			{% include 'common/generic_list.html' with obj=campigns objStr="campaign" %}
+			{% include 'common/generic_list.html' with obj=campaigns objStr="campaign" %}
 		</div>
 	</div>
 	{% else %}

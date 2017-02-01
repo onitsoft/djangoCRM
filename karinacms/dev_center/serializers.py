@@ -1,7 +1,7 @@
-from .models import Lead
+from .models import Dev
 from rest_framework import serializers
 
-class LeadSerializer(serializers.HyperlinkedModelSerializer):
+class DevSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-		model = Lead
+		model = Dev
 		fields = ('first_name', 'last_name', 'phone',)

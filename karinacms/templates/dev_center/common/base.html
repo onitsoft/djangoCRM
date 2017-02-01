@@ -3,7 +3,7 @@
 {% load static %}
     <head>
         <title>{% block title %}{% endblock %}</title>
-        <link rel="stylesheet" type="text/css" href="{% static 'leads.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'devs.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap/css/bootstrap.min.css' %}">
         <script type="text/javascript" src="{% static 'lib/jquery/jquery.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'lib/bootstrap/js/bootstrap.min.js' %}"></script>
@@ -11,33 +11,33 @@
         <script type="text/javascript" src="{% static 'assets/js/footer.js' %}"></script>
     </head>
     <body>
-    {% include "lead_center/common/header.html" %}
+    {% include "dev_center/common/header.html" %}
         <div class="col-lg-3">
             <div class="well">
             <h3>Options</h3>
                 <ul class="sidebar-nav"> 
                     <li>
-                        <a href="/leads/add_lead"> 
-                            Add new lead
+                        <a href="/devs/add_dev">
+                            Add new dev
                         </a>
                     </li>
                     <li>
-                        <a href="/leads/products">
+                        <a href="/devs/products">
                             Services
                         </a>
                     </li>
                     <li>
-                        <a href="/leads/campaigns">
+                        <a href="/devs/campaigns">
                             Campaigns
                         </a>
                     </li>
                     <li>    
-                        <a href="/leads/statuses">
-                            Lead statuses
+                        <a href="/devs/statuses">
+                            Devs statuses
                         </a>
                     </li>
                <!--      <li>
-                        <a href="/leads/options">
+                        <a href="/devs/options">
                             Options
                         </a>
                     </li> -->
